@@ -3,7 +3,7 @@ package api
 import(
 	"net/http"
 	"github.com/gin-gonic/gin"
-	"github.com/dengje/you-cms/pkg/util"
+	"github.com/dengje/simple/pkg/util"
 
 
 )

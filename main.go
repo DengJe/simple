@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dengje/you-cms/routes"
+	"github.com/dengje/simple/routes"
 	"github.com/gin-gonic/gin"
 )
 

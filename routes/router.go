@@ -1,10 +1,10 @@
 package routes
 
 import(
-	"github.com/dengje/you-cms/api/cms"
+	"github.com/dengje/simple/api/cms"
 	"github.com/gin-gonic/gin"
-	"github.com/dengje/you-cms/api"
-	"github.com/dengje/you-cms/middleware/jwt"
+	"github.com/dengje/simple/api"
+	"github.com/dengje/simple/middleware/jwt"
 )
 
 func RegisterRoutes(router *gin.Engine) {
