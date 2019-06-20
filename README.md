@@ -5,11 +5,16 @@ this is a template of restful api use gin
 因为国内经常被墙建议使用代理
 
 ```
-    export GOPROXY=https://goproxy.io
+export GOPROXY=https://goproxy.io
 ```
 
 # 运行
 
 ```
-    go run main.go
+go run main.go
 ```
+
+* JWT支持
+* 分组路由
+* refresh_token刷新
+* 快速开发api
