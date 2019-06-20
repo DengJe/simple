@@ -16,5 +16,6 @@ go run main.go
 
 * JWT支持
 * 分组路由
-* refresh_token刷新
+* refresh_token刷新access_token
 * 快速开发api
+
