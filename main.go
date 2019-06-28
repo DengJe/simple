@@ -1,8 +1,12 @@
 package main
 
 import (
-	"github.com/dengje/simple/routes"
+
+	"simple/routes"
 	"github.com/gin-gonic/gin"
+
+
+
 )
 
 func main() {
@@ -12,5 +16,8 @@ func main() {
 	app.Static("/static", "./static")
 	//register routes
 	routes.RegisterRoutes(app)
-	app.Run() // 监听并在 0.0.0.0:8080 上启动服务
+	// 监听并在 0.0.0.0:8080 上启动服务
+
+	app.Run()
+
 }

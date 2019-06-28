@@ -22,26 +22,24 @@ type Jwt struct {
 	RefreshTokenExpireTime time.Duration
 }
 
-func New() {
-	secret := "222"
-	accessExpire := 3
+func init() {
 	JwtInstance = &Jwt{
-		Key:                    []byte(secret),
-		AccessTokenExpireTime:  time.Hour * time.Duration(accessExpire),
-		RefreshTokenExpireTime: time.Hour * 24 * 30,
+		Key:                    []byte("\x88W\xf09\x91\x07\x98\x89\x87\x96\xa0A\xc68\xf9\xecJJU\x17\xc5V\xbe\x8b\xef\xd7\xd8\xd3\xe6\x95*4"),
+		AccessTokenExpireTime:  time.Hour * time.Duration(2),
+		RefreshTokenExpireTime: time.Hour * 24 * 7,
 	}
 }
 
-func (j *Jwt) GenerateTokens(identify string) (string, string, error) {
+func GenerateTokens(identify string) (string, string, error) {
 	var (
 		accessToken, refreshToken string
 		err                       error
 	)
-	accessToken, err = j.GenerateAccessToken(identify)
+	accessToken, err = GenerateAccessToken(identify)
 	if err != nil {
 		return "", "", err
 	}
-	refreshToken, err = j.GenerateRefreshToken(identify)
+	refreshToken, err = GenerateRefreshToken(identify)
 	if err != nil {
 		return "", "", err
 	}
@@ -52,51 +50,44 @@ func (j *Jwt) GenerateAccessToken(identify string) (string, error) {
 	return j.generateToken(j.AccessTokenExpireTime, ACCESS, identify)
 }
 
+
 func GenerateAccessToken(identify string) (string, error) {
-	return JwtInstance.GenerateAccessToken(identify)
+	return JwtInstance.generateToken(JwtInstance.AccessTokenExpireTime, ACCESS, identify)
 }
 
-func (j *Jwt) GenerateRefreshToken(identify string) (string, error) {
-	return j.generateToken(j.RefreshTokenExpireTime, REFRESH, identify)
+func GenerateRefreshToken(identify string) (string, error) {
+	return JwtInstance.generateToken(JwtInstance.AccessTokenExpireTime, REFRESH, identify)
 }
 
 func (j *Jwt) generateToken(timeOut time.Duration, tokenType, identify string) (string, error) {
+	key := []byte(JwtInstance.Key)
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	expire := time.Now().Add(timeOut)
 	// exp express token expire time
 	claims["exp"] = expire.Unix()
 	claims["type"] = tokenType
-	// identify express username
+	// identi
+	// get the exp timefy express username
 	claims["identify"] = identify
-	// get the exp time
 	//exp := int64(claims["exp"].(float64))
-	return token.SignedString(j.Key)
-}
-
-func (j *Jwt) VerifyAccessTokenInHeader(authHeader string) (jwt.MapClaims, error) {
-	return j.verifyTokenInHeader(authHeader, ACCESS)
+	return token.SignedString(key)
 }
 
 func VerifyAccessTokenInHeader(authHeader string) (jwt.MapClaims, error) {
-	return JwtInstance.VerifyAccessTokenInHeader(authHeader)
-}
+	var tokenStr string
 
-func (j *Jwt) VerifyRefreshToken(authHeader string) (jwt.MapClaims, error) {
-	return j.verifyToken(authHeader, REFRESH)
-}
-
-func (j *Jwt) verifyTokenInHeader(authHeader, tokenType string) (jwt.MapClaims, error) {
-	var (
-		tokenStr string
-	)
 	parts := strings.SplitN(authHeader, " ", 2)
 
 	if !(len(parts) == 2 && parts[0] == "Bearer") {
 		return nil, errors.New("请填写正确的Bearer字段")
 	}
 	tokenStr = parts[1]
-	return j.verifyToken(tokenStr, tokenType)
+	return JwtInstance.verifyToken(tokenStr, ACCESS)
+}
+
+func VerifyRefreshToken(authHeader string) (jwt.MapClaims, error) {
+	return JwtInstance.verifyToken(authHeader, REFRESH)
 }
 
 func (j *Jwt) verifyToken(tokenStr, tokenType string) (jwt.MapClaims, error) {

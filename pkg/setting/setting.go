@@ -1,60 +1,43 @@
 package setting
 
-import (
-    "log"
-    "time"
 
+import (
+    "errors"
+    "log"
     "github.com/go-ini/ini"
-)
+    )
 
 var (
     Cfg *ini.File
 
-    RunMode string
-    
-    HTTPPort int
-    ReadTimeout time.Duration
-    WriteTimeout time.Duration
-
-    PageSize int
-    JwtSecret string
 )
 
 func init() {
     var err error
-    Cfg, err = ini.Load("conf/app.ini")
+
+    Cfg, err = ini.Load("C:/workspace/go/test/simple/conf/app.ini")
     if err != nil {
-        log.Fatalf("Fail to parse 'conf/app.ini': %v", err)
+        log.Printf("Fail to parse 'conf/app.ini': %v", err)
     }
 
-    LoadBase()
-    LoadServer()
-    LoadApp()
+
+
 }
 
-func LoadBase() {
-    RunMode = Cfg.Section("").Key("RUN_MODE").MustString("debug")
-}
+func LoadConfig(section string,key string)(string,error){
 
-func LoadServer() {
-    sec, err := Cfg.GetSection("server")
+    sec, err := Cfg.GetSection(section)
     if err != nil {
-        log.Fatalf("Fail to get section 'server': %v", err)
+        return section,errors.New("有误")
     }
+    //判断key是否存在
+    yes := Cfg.Section(section).HasKey(key)
+    if yes == false {
+        return key,errors.New("有误")
+    }
+    config := sec.Key(key).String()
 
-    RunMode = Cfg.Section("").Key("RUN_MODE").MustString("debug")
+    return config,nil
 
-    HTTPPort = sec.Key("HTTP_PORT").MustInt(8000)
-    ReadTimeout = time.Duration(sec.Key("READ_TIMEOUT").MustInt(60)) * time.Second
-    WriteTimeout =  time.Duration(sec.Key("WRITE_TIMEOUT").MustInt(60)) * time.Second   
 }
 
-func LoadApp() {
-    sec, err := Cfg.GetSection("app")
-    if err != nil {
-        log.Fatalf("Fail to get section 'app': %v", err)
-    }
-
-    JwtSecret = sec.Key("JWT_SECRET").MustString("!@)*#)!@U#@*!@!)")
-    PageSize = sec.Key("PAGE_SIZE").MustInt(10)
-}
